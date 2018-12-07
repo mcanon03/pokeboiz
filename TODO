@@ -1,0 +1,11 @@
+- move API calls to services
+- add linting: prettier
+- add v-if to filter pokemon id 1-151
+  - OR update slicing
+- fix routing
+  - filter, got back to home --> filter is not reset
+- filter types by generation (?)
+  - if nothing present, add text
+  - add default image
+- get pokemon by generation
+- put on Netlify
