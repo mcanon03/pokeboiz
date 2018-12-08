@@ -1,7 +1,5 @@
 
 - add linting: prettier
-- add v-if to filter pokemon id 1-151
-  - OR update slicing
 - fix routing
   - filter, got back to home --> filter is not reset
 - add ability to select multiple types
