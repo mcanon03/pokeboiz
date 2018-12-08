@@ -1,13 +1,13 @@
 <template>
   <div>
     <div>
-      <el-checkbox-group>
+      <div>
         <el-checkbox-button
           v-for="(pokemonType, index) in pokemonTypes.results"
           :key="index"
-          @change="getPokemonForType(pokemonTypes.results[index].name)"
+          @change="filterPokemonByType(pokemonTypes.results[index].name)"
         >{{ pokemonTypes.results[index].name }}</el-checkbox-button>
-      </el-checkbox-group>
+      </div>
     </div>
 
     <div>
@@ -32,7 +32,7 @@
 
 <script>
 
-import { getAllPokemon } from '@/services/pokemon.js'
+import { getAllPokemon, getAllPokemonTypes, filterPokemonByType } from '@/services/pokemon.js'
  
 export default {
   // data needs to be a function --> when you instantiate the component, they will have an independent set of data
@@ -51,7 +51,8 @@ export default {
             name: ""
           }
         ]
-      }
+      },
+      pokemonByTypes: [],
     };
   },
 
@@ -59,20 +60,36 @@ export default {
   created,
 
   methods: {
-    clickedCard,
-    async getPokemonForType(type) {
+    clickedCard(name) {
+      // this.$route: info about current route
+      // this.$router: full set of routes
+      // this.$router.push({ name: 'pokemon', params: { name }});
+      this.$router.push(`/pokemon/${name}`);
+    },
+    
+    async filterPokemonByType(type) {
       try {
-        const response = await fetch(`https://pokeapi.co/api/v2/type/${type}/`);
-        const body = await response.json();
-        let filteredPokemon = [];
+        const response = await filterPokemonByType(type);
+        
+        // reset array
+        this.pokemonByTypes = [];
 
-        body.pokemon.forEach(key => filteredPokemon.push(key.pokemon));
+        response.pokemon.forEach(key => 
+          {
+            if (key.pokemon.url.split('/').slice(-2,-1)[0] < 150) {
+                        this.pokemonByTypes.push({
+            ...key.pokemon,
+            id: key.pokemon.url.split('/').slice(-2,-1)[0]
+          })
+            }
+          }
+        );
 
-        this.pokemonList = filteredPokemon;
+        this.pokemonList = this.pokemonByTypes;
 
         this.$router.push({ path: "pokemon", query: { type: type } });
       } catch (e) {
-        console.error("Failed to get pokemon of a specific type");
+        console.error("Failed to get pokemon of a specific type", e);
       }
     }
   },
@@ -80,7 +97,7 @@ export default {
   computed: {
     pokemonListWithIds() {
       return this.pokemonList.map(key => {
-        let id = key.url.substring(34).slice(0, -1);
+        let id = key.url.split('/').slice(-2,-1)[0];
 
         return { ...key, id }
       });
@@ -100,30 +117,21 @@ export default {
   }
 };
 
+// sets intial data set
 async function created() {
   try {
-    const body = await getAllPokemon();
-    // gets all pokemon
-    this.pokemonList = body.results.splice(0, 150);
+    const response = await getAllPokemon();
+    this.pokemonList = response.results.splice(0, 150);
   } catch (e) {
     console.error("Failed to load pokemon");
   }
 
   try {
-    const response = await fetch("https://pokeapi.co/api/v2/type/");
-    // gets all types
-    // TODO: cycle through types for only gen 1
-    this.pokemonTypes = await response.json();
+    const response = await getAllPokemonTypes();
+    this.pokemonTypes = response;
   } catch (e) {
     console.error("Failed to load pokemon types");
   }
-};
-
-function clickedCard(name) {
-  // this.$route: info about current route
-  // this.$router: full set of routes
-  // this.$router.push({ name: 'pokemon', params: { name }});
-  this.$router.push(`/pokemon/${name}`);
 };
 
 </script>
@@ -148,4 +156,5 @@ function clickedCard(name) {
   margin: 1rem;
   text-transform: capitalize;
 }
+
 </style>
