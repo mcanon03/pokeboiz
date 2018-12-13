@@ -11,6 +11,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  methods: {}
+};
+</script>
+
 <style>
 * {
   font-family: "Montserrat Alternates", Arial, Helvetica, sans-serif;
