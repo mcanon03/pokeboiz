@@ -6,7 +6,8 @@
           v-for="(pokemonType, index) in pokemonTypes.results"
           :key="index"
           @change="filterPokemonByType(pokemonTypes.results[index].name)"
-        >{{ pokemonTypes.results[index].name }}</el-checkbox-button>
+          >{{ pokemonTypes.results[index].name }}</el-checkbox-button
+        >
       </div>
     </div>
 
@@ -18,12 +19,16 @@
           :key="pokemon.name"
           @click="clickedCard(pokemon.name)"
         >
-          <h3>{{ pokemon.id }} : {{ pokemon.name }}</h3>
+          <h3>{{ pokemon.name }}</h3>
           <!-- images are filtered by number -->
           <img
-            :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`"
+            :src="
+              `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                pokemon.id
+              }.png`
+            "
             alt
-          >
+          />
         </li>
       </ul>
     </div>
@@ -31,9 +36,12 @@
 </template>
 
 <script>
+import {
+  getAllPokemon,
+  getAllPokemonTypes,
+  filterPokemonByType
+} from "@/services/pokemon.js";
 
-import { getAllPokemon, getAllPokemonTypes, filterPokemonByType } from '@/services/pokemon.js'
- 
 export default {
   // data needs to be a function --> when you instantiate the component, they will have an independent set of data
   data() {
@@ -52,7 +60,7 @@ export default {
           }
         ]
       },
-      pokemonByTypes: [],
+      pokemonByTypes: []
     };
   },
 
@@ -66,28 +74,31 @@ export default {
       // this.$router.push({ name: 'pokemon', params: { name }});
       this.$router.push(`/pokemon/${name}`);
     },
-    
+
     async filterPokemonByType(type) {
       try {
-        const response = await filterPokemonByType(type);
-        
         // reset array
         this.pokemonByTypes = [];
 
-        response.pokemon.forEach(key => 
-          {
-            if (key.pokemon.url.split('/').slice(-2,-1)[0] < 150) {
-                        this.pokemonByTypes.push({
-            ...key.pokemon,
-            id: key.pokemon.url.split('/').slice(-2,-1)[0]
-          })
-            }
+        const response = await filterPokemonByType(type);
+
+        response.pokemon.forEach(key => {
+          if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
+            this.pokemonByTypes.push({
+              ...key.pokemon,
+              id: key.pokemon.url.split("/").slice(-2, -1)[0]
+            });
           }
-        );
+        });
 
         this.pokemonList = this.pokemonByTypes;
 
-        this.$router.push({ path: "pokemon", query: { type: type } });
+        this.$router.push({
+          path: "pokemon",
+          query: {
+            type: type
+          }
+        });
       } catch (e) {
         console.error("Failed to get pokemon of a specific type", e);
       }
@@ -97,12 +108,12 @@ export default {
   computed: {
     pokemonListWithIds() {
       return this.pokemonList.map(key => {
-        let id = key.url.split('/').slice(-2,-1)[0];
+        let id = key.url.split("/").slice(-2, -1)[0];
 
-        return { ...key, id }
+        return { ...key, id };
       });
     },
-    
+
     filterPokemonList() {
       if (this.$route.query.type) {
         // get names of all pokemon of a specific type
@@ -112,8 +123,7 @@ export default {
         // need to reset this.pokemonList
         return this.pokemonList;
       }
-    },
-
+    }
   }
 };
 
@@ -132,8 +142,7 @@ async function created() {
   } catch (e) {
     console.error("Failed to load pokemon types");
   }
-};
-
+}
 </script>
 
 <style>
@@ -156,5 +165,4 @@ async function created() {
   margin: 1rem;
   text-transform: capitalize;
 }
-
 </style>
