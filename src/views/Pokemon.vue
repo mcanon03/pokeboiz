@@ -9,10 +9,12 @@
             :key="index"
             >{{ pokemonTypes.results[index].name }}</option
           >
+          <option selected="selected">all</option>
         </select>
       </div>
     </div>
 
+    <!-- displays pokemon cards -->
     <div>
       <ul class="card-list">
         <li
@@ -22,7 +24,6 @@
           @click="clickedCard(pokemon.name)"
         >
           <h3>{{ pokemon.name }}</h3>
-          <!-- images are filtered by number -->
           <img
             :src="
               `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
@@ -48,6 +49,7 @@ export default {
   // data needs to be a function --> when you instantiate the component, they will have an independent set of data
   data() {
     return {
+      // data pulled from API
       pokemonList: [
         {
           id: "",
@@ -62,7 +64,9 @@ export default {
           }
         ]
       },
-      selectedType: ""
+      // manipulated data
+      selectedType: "all",
+      
     };
   },
 
@@ -79,28 +83,40 @@ export default {
 
     async filteredPokemon(type) {
       try {
+        if(type != "all") {
         // reset array
-        this.pokemonByTypes = [];
+          this.pokemonByType = [];
 
-        const response = await filterPokemonByType(type);
+          const response = await filterPokemonByType(type);
 
-        response.pokemon.forEach(key => {
-          if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
-            this.pokemonByTypes.push({
-              ...key.pokemon,
-              id: key.pokemon.url.split("/").slice(-2, -1)[0]
+          response.pokemon.forEach(key => {
+            if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
+              this.pokemonByType.push({
+                ...key.pokemon,
+                id: key.pokemon.url.split("/").slice(-2, -1)[0]
+              });
+            }
+          });
+
+          // this is manipulating the original data set (bad)
+          this.pokemonList = this.pokemonByType;
+        } else {
+          // resets filter to all types (DIY)
+          const response = await getAllPokemon();
+          this.pokemonList = response.results.splice(0, 150).map(key => {
+              let id = key.url.split("/").slice(-2, -1)[0];
+
+              return { ...key, id };
             });
-          }
-        });
+        }
 
-        this.pokemonList = this.pokemonByTypes;
+          this.$router.push({
+            path: "pokemon",
+            query: {
+              type: type
+            }
+          });
 
-        this.$router.push({
-          path: "pokemon",
-          query: {
-            type: type
-          }
-        });
       } catch (e) {
         console.error("Failed to get pokemon of a specific type", e);
       }
@@ -122,7 +138,11 @@ export default {
 async function created() {
   try {
     const response = await getAllPokemon();
-    this.pokemonList = response.results.splice(0, 150);
+    this.pokemonList = response.results.splice(0, 150).map(key => {
+        let id = key.url.split("/").slice(-2, -1)[0];
+
+        return { ...key, id };
+      });
   } catch (e) {
     console.error("Failed to load pokemon");
   }

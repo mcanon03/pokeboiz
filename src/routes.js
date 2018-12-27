@@ -1,5 +1,5 @@
-import Pokemon from "./views/pokemon.vue";
-import SinglePokemon from "./views/singlePokemon.vue";
+import Pokemon from "@/views/pokemon.vue";
+import SinglePokemon from "@/views/singlePokemon.vue";
 
 export default [
   {
