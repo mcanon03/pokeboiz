@@ -1,130 +1,159 @@
 <template>
   <div>
-    <h1 class="header">{{ pokemon.name }}</h1>
+    <div>
+      <div>
+        <label>Select a Pokemon Type: </label>
+        <select v-model="selectedType" @change="filteredPokemon(selectedType)">
+          <option
+            v-for="(pokemonType, index) in pokemonTypes.results"
+            :key="index"
+            >{{ pokemonTypes.results[index].name }}</option
+          >
+        </select>
+      </div>
+    </div>
 
-    <h2 class="header">Default Form</h2>
-    <ul>
-      <li
-        class="img"
-        v-for="defaultSprite in defaultSprites"
-        :key="defaultSprite"
-      >
-        <img :src="defaultSprite" />
-      </li>
-    </ul>
-
-    <h2 class="header">Shiny Form</h2>
-    <ul>
-      <li class="img" v-for="shinySprite in shinySprites" :key="shinySprite">
-        <img :src="shinySprite" />
-      </li>
-    </ul>
-
-    <h2 class="header">Type</h2>
-    <p class="header list" v-for="type in pokemon.types" :key="type.name">
-      {{ type.type.name }}
-    </p>
-
-    <h2 class="header">Moves</h2>
-    <ul class="col-4">
-      <li class="list" v-for="move in pokemon.moves" :key="move.name">
-        {{ move.move.name }}
-      </li>
-    </ul>
+    <div>
+      <ul class="card-list">
+        <li
+          class="card"
+          v-for="pokemon in pokemonListWithIds"
+          :key="pokemon.name"
+          @click="clickedCard(pokemon.name)"
+        >
+          <h3>{{ pokemon.name }}</h3>
+          <!-- images are filtered by number -->
+          <img
+            :src="
+              `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                pokemon.id
+              }.png`
+            "
+            alt
+          />
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import {
+  getAllPokemon,
+  getAllPokemonTypes,
+  filterPokemonByType
+} from "@/services/pokemon.js";
+
 export default {
+  // data needs to be a function --> when you instantiate the component, they will have an independent set of data
   data() {
     return {
-      pokemon: {
-        name: "",
-        sprites: {
-          // need to default keys?
-        },
-        types: [
+      pokemonList: [
+        {
+          id: "",
+          name: "",
+          url: ""
+        }
+      ],
+      pokemonTypes: {
+        results: [
           {
-            type: {
-              name: ""
-            }
-          }
-        ],
-        moves: [
-          {
-            move: {
-              name: ""
-            }
+            name: ""
           }
         ]
-      }
+      },
+      selectedType: ""
     };
   },
 
-  async created() {
-    // params = parameters
-    // set of arguments that is getting passed in
-    // whole bunch of options being used
-    try {
-      const name = this.$route.params.name;
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${name}/`
-      );
-      this.pokemon = await response.json();
-    } catch (e) {
-      console.error(e);
+  //Lifecycle
+  created,
+
+  methods: {
+    clickedCard(name) {
+      // this.$route: info about current route
+      // this.$router: full set of routes
+      // this.$router.push({ name: 'pokemon', params: { name }});
+      this.$router.push(`/pokemon/${name}`);
+    },
+
+    async filteredPokemon(type) {
+      try {
+        // reset array
+        this.pokemonByTypes = [];
+
+        const response = await filterPokemonByType(type);
+
+        response.pokemon.forEach(key => {
+          if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
+            this.pokemonByTypes.push({
+              ...key.pokemon,
+              id: key.pokemon.url.split("/").slice(-2, -1)[0]
+            });
+          }
+        });
+
+        this.pokemonList = this.pokemonByTypes;
+
+        this.$router.push({
+          path: "pokemon",
+          query: {
+            type: type
+          }
+        });
+      } catch (e) {
+        console.error("Failed to get pokemon of a specific type", e);
+      }
     }
   },
 
   computed: {
-    defaultSprites() {
-      const spriteKey = Object.keys(this.pokemon.sprites);
+    pokemonListWithIds() {
+      return this.pokemonList.map(key => {
+        let id = key.url.split("/").slice(-2, -1)[0];
 
-      return spriteKey
-        .filter(key => !key.includes("shiny"))
-        .reduce((obj, key) => {
-          if (this.pokemon.sprites[key] != null) {
-            obj[key] = this.pokemon.sprites[key];
-          }
-          return obj;
-        }, {});
-    },
-
-    shinySprites() {
-      const spriteKey = Object.keys(this.pokemon.sprites);
-
-      return spriteKey
-        .filter(key => key.includes("shiny"))
-        .reduce((obj, key) => {
-          if (this.pokemon.sprites[key] != null) {
-            obj[key] = this.pokemon.sprites[key];
-          }
-          return obj;
-        }, {});
+        return { ...key, id };
+      });
     }
   }
 };
+
+// sets intial data set
+async function created() {
+  try {
+    const response = await getAllPokemon();
+    this.pokemonList = response.results.splice(0, 150);
+  } catch (e) {
+    console.error("Failed to load pokemon");
+  }
+
+  try {
+    const response = await getAllPokemonTypes();
+    this.pokemonTypes = response;
+  } catch (e) {
+    console.error("Failed to load pokemon types");
+  }
+}
 </script>
 
-<style scoped>
-* {
-  text-transform: capitalize;
-}
-
-ul {
+<style>
+.card-list {
   list-style: none;
-  text-align: center;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.header {
-  text-align: center;
-}
-
-.col-4 {
-  columns: 4;
-}
-
-.img {
-  display: inline;
+.card {
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 1rem;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem;
+  text-transform: capitalize;
 }
 </style>

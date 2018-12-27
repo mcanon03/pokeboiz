@@ -1,4 +1,3 @@
-
 BUGS:
 - routing
   - filter, got back to home --> filter is not reset but query is removed
