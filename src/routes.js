@@ -12,9 +12,9 @@ export default [
     name: "pokemon",
     component: SinglePokemon
   },
-  // {
-  //   // if path doesn't match any defined route, it will redirect to /pokemon
-  //   path: "*",
-  //   redirect: "/pokemon"
-  // }
+  {
+    // if path doesn't match any defined route, it will redirect to /pokemon
+    path: "*",
+    redirect: "/pokemon"
+  }
 ];
