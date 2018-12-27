@@ -1,19 +1,23 @@
 <template>
-  <div id="app">
-    <div id="nav">
+  <div>
+    <!-- <div id="nav">
       <h1>Pokemon Gen 1</h1>
       <div>
-        <router-link to="/pokemon">Home</router-link> |
-        <router-link to="/type">Types</router-link>
+        <router-link to="/pokemon">Home</router-link>
       </div>
-    </div>
+    </div> -->
+    <app-header></app-header>
     <router-view />
   </div>
 </template>
 
 <script>
+import header from "./components/header.vue";
+
 export default {
-  methods: {}
+  components: {
+    "app-header": header
+  }
 };
 </script>
 
