@@ -10,11 +10,13 @@ BUGS:
 - add ability to select multiple types
   - update button/checkbox component
 
+- get pokemon by generation
+
 - filter types by generation (?)
   - if nothing present, add text
   - add default image
 
-- get pokemon by generation
+
 
 - how to not put in password before every commit
 
