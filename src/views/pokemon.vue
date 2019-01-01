@@ -19,6 +19,7 @@
       <ul class="card-list">
         <li
           class="card"
+
           v-for="pokemon in displayedPokemon"
           :key="pokemon.name"
           @click="clickedCard(pokemon.name)"
@@ -88,6 +89,7 @@ export default {
     async filteredPokemon(type) {
       try {
         if(type != "all") {
+        
         // resets array
           this.displayedPokemon = [];
 
@@ -101,7 +103,6 @@ export default {
               });
             }
           });
-
         } else {
           // resets filter to all types (DIY)
           this.displayedPokemon = this.pokemonList;
@@ -141,6 +142,7 @@ async function created() {
       });
 
     this.displayedPokemon = this.pokemonList;
+
   } catch (e) {
     console.error("Failed to load pokemon");
   }
