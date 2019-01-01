@@ -19,7 +19,8 @@
       <ul class="card-list">
         <li
           class="card"
-          v-for="pokemon in pokemonListWithIds"
+
+          v-for="pokemon in displayedPokemon"
           :key="pokemon.name"
           @click="clickedCard(pokemon.name)"
         >
@@ -66,6 +67,13 @@ export default {
       },
       // manipulated data
       selectedType: "all",
+      displayedPokemon: [
+        {
+          id: "",
+          name: "",
+          url: ""
+        }
+      ]
       
     };
   },
@@ -75,47 +83,37 @@ export default {
 
   methods: {
     clickedCard(name) {
-      // this.$route: info about current route
-      // this.$router: full set of routes
-      // this.$router.push({ name: 'pokemon', params: { name }});
       this.$router.push(`/pokemon/${name}`);
     },
 
     async filteredPokemon(type) {
       try {
         if(type != "all") {
-        // reset array
-          this.pokemonByType = [];
+        
+        // resets array
+          this.displayedPokemon = [];
 
           const response = await filterPokemonByType(type);
 
           response.pokemon.forEach(key => {
             if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
-              this.pokemonByType.push({
+              this.displayedPokemon.push({
                 ...key.pokemon,
                 id: key.pokemon.url.split("/").slice(-2, -1)[0]
               });
             }
           });
-
-          // this is manipulating the original data set (bad)
-          this.pokemonList = this.pokemonByType;
         } else {
           // resets filter to all types (DIY)
-          const response = await getAllPokemon();
-          this.pokemonList = response.results.splice(0, 150).map(key => {
-              let id = key.url.split("/").slice(-2, -1)[0];
-
-              return { ...key, id };
-            });
+          this.displayedPokemon = this.pokemonList;
         }
 
-          this.$router.push({
-            path: "pokemon",
-            query: {
-              type: type
-            }
-          });
+        this.$router.push({
+          path: "pokemon",
+          query: {
+            type: type
+          }
+        });
 
       } catch (e) {
         console.error("Failed to get pokemon of a specific type", e);
@@ -123,14 +121,13 @@ export default {
     }
   },
 
-  computed: {
-    pokemonListWithIds() {
-      return this.pokemonList.map(key => {
-        let id = key.url.split("/").slice(-2, -1)[0];
-
-        return { ...key, id };
-      });
+  beforeRouteUpdate(to, from, next) {
+    if (!to.query.type) {
+      this.selectedType = 'all';
+      this.displayedPokemon = this.pokemonList;
     }
+
+    next();
   }
 };
 
@@ -143,6 +140,9 @@ async function created() {
 
         return { ...key, id };
       });
+
+    this.displayedPokemon = this.pokemonList;
+
   } catch (e) {
     console.error("Failed to load pokemon");
   }
