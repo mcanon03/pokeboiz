@@ -66,7 +66,13 @@ export default {
       },
       // manipulated data
       selectedType: "all",
-      displayedPokemon: []
+      displayedPokemon: [
+        {
+          id: "",
+          name: "",
+          url: ""
+        }
+      ]
       
     };
   },
@@ -76,9 +82,6 @@ export default {
 
   methods: {
     clickedCard(name) {
-      // this.$route: info about current route
-      // this.$router: full set of routes
-      // this.$router.push({ name: 'pokemon', params: { name }});
       this.$router.push(`/pokemon/${name}`);
     },
 
@@ -117,8 +120,13 @@ export default {
     }
   },
 
-  computed: {
-    
+  beforeRouteUpdate(to, from, next) {
+    if (!to.query.type) {
+      this.selectedType = 'all';
+      this.displayedPokemon = this.pokemonList;
+    }
+
+    next();
   }
 };
 
