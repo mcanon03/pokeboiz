@@ -1,14 +1,8 @@
 BUGS:
 - routing
-  - filter, got back to home --> filter is not reset but query is removed
   - select type, refresh page --> query remains, but all pokemon are returned
 
-- deselect type, resets route
-
 - add empty state if no pokemon
-
-- add ability to select multiple types
-  - update button/checkbox component
 
 - get pokemon by generation
 
@@ -16,12 +10,13 @@ BUGS:
   - if nothing present, add text
   - add default image
 
-
-
-- how to not put in password before every commit
-
 - add tests
 
+
+
+FUTURE:
+- add ability to select multiple types
+  - update button/checkbox component
 - add PWA
 
 END GOAL:
