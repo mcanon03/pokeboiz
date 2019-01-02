@@ -14,3 +14,13 @@ export async function filterPokemonByType(type) {
   const response = await fetch(`${url}/type/${type}/`);
   return response.json();
 }
+
+export async function getPokemonGen() {
+  const response = await fetch(`${url}/generation/`);
+  return response.json();
+}
+
+export async function filterPokemonGen(gen) {
+  const response = await fetch(`${url}/generation/${gen}`);
+  return response.json();
+}

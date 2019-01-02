@@ -42,7 +42,7 @@
 import {
   getAllPokemon,
   getAllPokemonTypes,
-  filterPokemonByType
+  filterPokemonByType,
 } from "@/services/pokemon.js";
 
 export default {
