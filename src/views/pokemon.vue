@@ -42,7 +42,7 @@
 import {
   getAllPokemon,
   getAllPokemonTypes,
-  filterPokemonByType,
+  filterPokemonByType
 } from "@/services/pokemon.js";
 
 export default {
@@ -91,7 +91,7 @@ export default {
           this.displayedPokemon = [];
 
           const response = await filterPokemonByType(type);
-
+          console.log(response);
           response.pokemon.forEach(key => {
             if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
               this.displayedPokemon.push({
@@ -131,7 +131,7 @@ export default {
 async function created() {
   try {
     const response = await getAllPokemon();
-    this.pokemonList = response.results.splice(0, 150).map(key => {
+    this.pokemonList = response.results.splice(0, 151).map(key => {
       let id = key.url.split("/").slice(-2, -1)[0];
 
       return { ...key, id };

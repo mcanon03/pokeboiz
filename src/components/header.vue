@@ -2,7 +2,7 @@
   <div id="nav">
     <label>Select a Pokemon Generation:</label>
     <select>
-      <option v-for="(gen, index) in pokemonGenerations" :key="index">
+      <option v-for="(gen, index) in displayedPokemonGenerations" :key="index">
         {{ gen.name }}
       </option>
       <option selected="selected">all</option>
@@ -12,10 +12,7 @@
 </template>
 
 <script>
-import {
-  getPokemonGen,
-  filterPokemonGen
-} from "@/services/pokemon.js";
+import { getPokemonGen, filterPokemonGen } from "@/services/pokemon.js";
 
 export default {
   data() {
@@ -25,8 +22,14 @@ export default {
           name: "",
           url: ""
         }
+      ],
+      displayedPokemonGenerations: [
+        {
+          name: "",
+          url: ""
+        }
       ]
-    }
+    };
   },
 
   async created() {
@@ -38,11 +41,10 @@ export default {
         return { ...key, id };
       });
 
-      this.pokemonGenerations.map(key => {
-        switch(key.id) {
-          case "1":
-            key.name = "Gen 1 (Blue/Red/Yellow)";
-            break;
+      this.displayedPokemonGenerations = this.pokemonGenerations;
+
+      this.displayedPokemonGenerations.map(key => {
+        switch (key.id) {
           case "1":
             key.name = "Gen 1 (Blue/Red/Yellow)";
             break;
@@ -63,17 +65,24 @@ export default {
             break;
           case "7":
             key.name = "Gen 7 (Sun/Moon)";
-            break;            
+            break;
           default:
-            key.name = "New Gen!"
+            key.name = "New Gen!";
             break;
         }
       });
     } catch (e) {
-      console.error("Failed to get pokemon generations")
+      console.error("Failed to get pokemon generations");
+    }
+
+    try {
+      const response = await filterPokemonGen(1);
+      console.log(response);
+    } catch (e) {
+      console.error(e);
     }
   }
-}
+};
 </script>
 
 <style>

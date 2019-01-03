@@ -1,10 +1,19 @@
+- get pokemon by generation:
+  - create 3 separate components:
+    - gen drop down
+    - type drop down
+    - displayed cards
+
+ -- make all the API calls at the beginning
+  - gen and pokemon and type
+  -  getting individual pokemon info is still it's own separate API calls
+  
 BUGS:
 - routing
   - select type, refresh page --> query remains, but all pokemon are returned
 
 - add empty state if no pokemon
 
-- get pokemon by generation
 
 - filter types by generation (?)
   - if nothing present, add text
@@ -25,3 +34,4 @@ END GOAL:
   - guess name
   - guess type
   - guess weakness (?)
+  - guess sound

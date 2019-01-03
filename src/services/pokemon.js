@@ -21,6 +21,6 @@ export async function getPokemonGen() {
 }
 
 export async function filterPokemonGen(gen) {
-  const response = await fetch(`${url}/generation/${gen}`);
+  const response = await fetch(`${url}/generation/${gen}/`);
   return response.json();
 }
