@@ -19,7 +19,6 @@
       <ul class="card-list">
         <li
           class="card"
-
           v-for="pokemon in displayedPokemon"
           :key="pokemon.name"
           @click="clickedCard(pokemon.name)"
@@ -74,7 +73,6 @@ export default {
           url: ""
         }
       ]
-      
     };
   },
 
@@ -88,13 +86,12 @@ export default {
 
     async filteredPokemon(type) {
       try {
-        if(type != "all") {
-        
-        // resets array
+        if (type != "all") {
+          // resets array
           this.displayedPokemon = [];
 
           const response = await filterPokemonByType(type);
-
+          console.log(response);
           response.pokemon.forEach(key => {
             if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
               this.displayedPokemon.push({
@@ -114,7 +111,6 @@ export default {
             type: type
           }
         });
-
       } catch (e) {
         console.error("Failed to get pokemon of a specific type", e);
       }
@@ -123,7 +119,7 @@ export default {
 
   beforeRouteUpdate(to, from, next) {
     if (!to.query.type) {
-      this.selectedType = 'all';
+      this.selectedType = "all";
       this.displayedPokemon = this.pokemonList;
     }
 
@@ -135,14 +131,13 @@ export default {
 async function created() {
   try {
     const response = await getAllPokemon();
-    this.pokemonList = response.results.splice(0, 150).map(key => {
-        let id = key.url.split("/").slice(-2, -1)[0];
+    this.pokemonList = response.results.splice(0, 151).map(key => {
+      let id = key.url.split("/").slice(-2, -1)[0];
 
-        return { ...key, id };
-      });
+      return { ...key, id };
+    });
 
     this.displayedPokemon = this.pokemonList;
-
   } catch (e) {
     console.error("Failed to load pokemon");
   }

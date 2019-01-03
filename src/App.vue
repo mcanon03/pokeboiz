@@ -1,11 +1,5 @@
 <template>
   <div>
-    <!-- <div id="nav">
-      <h1>Pokemon Gen 1</h1>
-      <div>
-        <router-link to="/pokemon">Home</router-link>
-      </div>
-    </div> -->
     <app-header></app-header>
     <router-view />
   </div>
