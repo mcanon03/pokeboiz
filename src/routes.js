@@ -1,11 +1,12 @@
 import Pokemon from "@/views/pokemon.vue";
 import SinglePokemon from "@/views/singlePokemon.vue";
+import GenDropdown from "@/components/genDropdown.vue"
 
 export default [
   {
     path: "/pokemon",
     name: "home",
-    component: Pokemon
+    component: GenDropdown
   },
   {
     path: "/pokemon/:name",

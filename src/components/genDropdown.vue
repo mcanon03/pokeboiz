@@ -1,7 +1,7 @@
 <template>
   <div id="gen-Dropdown">
     <label>Select a Pokemon Generation: </label>
-    <select v-model="selectedGen" @change="filterTypes(selectedGen)">
+    <select v-model="selectedGen" @change="filterPokemonByGen(selectedGen)">
       <option v-for="(gen, index) in displayedPokemonGenerations" :key="index">
         {{ gen.name }}
       </option>
@@ -9,16 +9,19 @@
     </select>
 
     <type-dropdown :displayedPokemonTypes="displayedPokemonTypes"></type-dropdown>
+    <pokemon-cards :displayedPokemon="displayedPokemon"></pokemon-cards>
   </div>
 </template>
 
 <script>
 import { getPokemonGen, filterPokemonGen, getAllPokemonTypes } from "@/services/pokemon.js";
 import typeDropdown from './typeDropdown.vue'
+import pokemonCards from '../views/pokemon.vue'
 
 export default {
   components: {
-    typeDropdown
+    typeDropdown,
+    pokemonCards
   },
   data() {
     return {
@@ -42,16 +45,36 @@ export default {
       ],
 
       displayedPokemonTypes: [],
+      displayedPokemon: [],
 
       selectedGen: ""
     };
   },
 
   methods: {
-    filterTypes(selectedGen) {
-    
+    async filterPokemonByGen(selectedGen) {
+      let genID = selectedGen.match(/\d+/)[0];
+
+      try {
+        const response = await filterPokemonGen(genID);
+        this.displayedPokemon = response.pokemon_species.map(key => {
+          let id = key.url.split("/").slice(-2, -1)[0];
+
+          return { ...key, id };
+        });;
+
+        this.displayedPokemon.sort((poke1, poke2) => {
+          return poke1.id - poke2.id;
+        })
+        
+      } catch (e) {
+        console.error("Failed to load pokemon types");
+      }
+    },
+
+    async filterTypes(selectedGen) {
     // resets array -- gen 6/7/all
-    this.displayedPokemonTypes = this.pokemonTypes.slice();
+      this.displayedPokemonTypes = this.pokemonTypes.slice();
       
     // gen 1: 15 types
       if (selectedGen.includes("1")) { 
@@ -74,12 +97,11 @@ export default {
       const response = await getPokemonGen();
       this.pokemonGenerations = response.results.map(key => {
         let id = key.url.split("/").slice(-2, -1)[0];
-        let dropdownName = ""
 
         return { ...key, id };
       });
 
-      this.displayedPokemonGenerations = this.pokemonGenerations;
+      this.displayedPokemonGenerations = this.pokemonGenerations.slice();
 
       this.displayedPokemonGenerations.map(key => {
         switch (key.id) {
@@ -135,7 +157,6 @@ export default {
     } catch (e) {
       console.error("Failed to load pokemon types");
     }
-
   }
 };
 </script>

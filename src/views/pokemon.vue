@@ -1,25 +1,23 @@
 <template>
   <div>
-    <div>
-      <ul class="card-list">
-        <li
-          class="card"
-          v-for="pokemon in displayedPokemon"
-          :key="pokemon.name"
-          @click="clickedCard(pokemon.name)"
-        >
-          <h3>{{ pokemon.name }}</h3>
-          <img
-            :src="
-              `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                pokemon.id
-              }.png`
-            "
-            alt
-          />
-        </li>
-      </ul>
-    </div>
+    <ul class="card-list">
+      <li
+        class="card"
+        v-for="pokemon in displayedPokemon"
+        :key="pokemon.name"
+        @click="clickedCard(pokemon.name)"
+      >
+        <h3>{{ pokemon.name }}</h3>
+        <img
+          :src="
+            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+              pokemon.id
+            }.png`
+          "
+          alt
+        />
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -31,6 +29,12 @@ import {
 } from "@/services/pokemon.js";
 
 export default {
+  props: {
+    displayedPokemon: {
+      type: Array,
+      required: true
+    }
+  },
   // data needs to be a function --> when you instantiate the component, they will have an independent set of data
   data() {
     return {
@@ -76,7 +80,6 @@ export default {
           this.displayedPokemon = [];
 
           const response = await filterPokemonByType(type);
-          console.log(response);
           response.pokemon.forEach(key => {
             if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
               this.displayedPokemon.push({

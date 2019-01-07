@@ -1,7 +1,9 @@
 <template>
   <div>
     <app-header></app-header>
-    <gen-dropdown></gen-dropdown>
+    <!-- <gen-dropdown></gen-dropdown>
+    <pokemon-cards></pokemon-cards> -->
+
     <!-- <type-dropdown></type-dropdown> -->
     <router-view />
   </div>
@@ -10,13 +12,13 @@
 <script>
 import header from "./components/header.vue";
 import genDropdown from "./components/genDropdown.vue";
-import typeDropdown from "./components/typeDropdown.vue";
+import pokemonCards from "./views/pokemon.vue"
 
 export default {
   components: {
     "app-header": header,
     "gen-dropdown": genDropdown,
-    "type-dropdown": typeDropdown
+    "pokemon-cards": pokemonCards
   }
 };
 </script>
