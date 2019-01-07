@@ -2,7 +2,7 @@
   <div>
     <app-header></app-header>
     <gen-dropdown></gen-dropdown>
-    <type-dropdown></type-dropdown>
+    <!-- <type-dropdown></type-dropdown> -->
     <router-view />
   </div>
 </template>

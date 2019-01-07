@@ -1,18 +1,14 @@
 <template>
   <div>
-    <div>
-      <div>
-        <label>Select a Pokemon Type: </label>
-        <select v-model="selectedType" @change="filteredPokemon(selectedType)">
-          <option
-            v-for="(pokemonType, index) in pokemonTypes.results"
-            :key="index"
-            >{{ pokemonTypes.results[index].name }}</option
-          >
-          <option selected="selected">all</option>
-        </select>
-      </div>
-    </div>
+    <label>Select a Pokemon Type: </label>
+    <select v-model="selectedType" @change="filteredPokemon(selectedType)">
+      <option
+        v-for="(pokemonType, index) in displayedPokemonTypes"
+        :key="index"
+        >{{ displayedPokemonTypes[index] }}</option
+      >
+      <option selected="selected">all</option>
+    </select>
   </div>
 </template>
 
@@ -24,9 +20,12 @@ import {
 } from "@/services/pokemon.js";
 
 export default {
-  props: [
-    
-  ],
+  props: {
+    displayedPokemonTypes: {
+      type: Array, 
+      required: true
+    }
+  },
 
   // data needs to be a function --> when you instantiate the component, they will have an independent set of data
   data() {

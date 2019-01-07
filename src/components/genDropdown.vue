@@ -7,13 +7,19 @@
       </option>
       <option selected="selected">all</option>
     </select>
+
+    <type-dropdown :displayedPokemonTypes="displayedPokemonTypes"></type-dropdown>
   </div>
 </template>
 
 <script>
 import { getPokemonGen, filterPokemonGen, getAllPokemonTypes } from "@/services/pokemon.js";
+import typeDropdown from './typeDropdown.vue'
 
 export default {
+  components: {
+    typeDropdown
+  },
   data() {
     return {
       // data pulled from API
@@ -34,6 +40,7 @@ export default {
           url: ""
         }
       ],
+
       displayedPokemonTypes: [],
 
       selectedGen: ""
