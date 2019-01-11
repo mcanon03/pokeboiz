@@ -1,8 +1,8 @@
 - get pokemon by generation:
   - create 3 separate components:
-    - gen drop down
-    - type drop down
-    - displayed cards
+    - gen drop down (parent)
+    - type drop down (child)
+    - displayed cards (child)
 
  -- make all the API calls at the beginning
   - gen and pokemon and type

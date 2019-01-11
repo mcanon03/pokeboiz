@@ -41,7 +41,6 @@ export default {
       pokemon: {
         name: "",
         sprites: {
-          // need to default keys?
         },
         types: [
           {
@@ -62,9 +61,6 @@ export default {
   },
 
   async created() {
-    // params = parameters
-    // set of arguments that is getting passed in
-    // whole bunch of options being used
     try {
       const name = this.$route.params.name;
       const response = await fetch(
