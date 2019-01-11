@@ -8,7 +8,7 @@
       <option selected="selected">all</option>
     </select>
 
-    <type-dropdown :displayedPokemonTypes="displayedPokemonTypes"></type-dropdown>
+    <type-dropdown  :displayedPokemonTypes="displayedPokemonTypes"></type-dropdown>
     <pokemon-cards :displayedPokemon="displayedPokemon"></pokemon-cards>
   </div>
 </template>
@@ -47,7 +47,7 @@ export default {
       displayedPokemonTypes: [],
       displayedPokemon: [],
 
-      selectedGen: ""
+      selectedGen: "all"
     };
   },
 
