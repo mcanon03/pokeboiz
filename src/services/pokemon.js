@@ -15,7 +15,7 @@ export async function filterPokemonByType(type) {
   return response.json();
 }
 
-export async function getPokemonGen() {
+export async function getAllPokemonGen() {
   const response = await fetch(`${url}/generation/`);
   return response.json();
 }
