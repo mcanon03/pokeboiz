@@ -1,16 +1,35 @@
 <template>
-    <h1>Hello there!</h1>
+  <div>
+    <select v-model="selectedOption" @change="notifySelection">
+      <option v-for='option in options' :key='option.id'>
+        {{ option[displayValue] }} 
+      </option>
+      <option>All</option>
+    </select>
+  </div>
 </template>
 
 <script>
 
 const pokeDropdown = {
   name: 'pokeDropdown',
-  props: [],
+  props: [
+    'options',
+    'displayValue',
+    'selected'
+  ],
   data() {
     return {
-
+      selectedOption: null
     }
+  },
+  methods: {
+    notifySelection() {
+      this.$parent.$emit('update', this.selectedOption)
+    }
+  },
+  created() {
+    this.selectedOption = this.selected;
   }
 }
 

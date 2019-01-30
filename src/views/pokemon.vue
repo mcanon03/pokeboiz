@@ -1,6 +1,14 @@
 <template>
-  <div>
-    <pokeDropdown></pokeDropdown>
+<div>
+    <h1>{{ selected }}</h1>
+    <div>
+      Select a Pokemon Gen: 
+      <poke-dropdown :selected='selected'
+        :options="displayedPokemonGenerations"
+        displayValue="name"
+      />
+    </div>
+    
     <!-- <ul class="card-list">
       <li
         class="card"
@@ -28,8 +36,8 @@ import pokeDropdown from '@/components/pokeDropdown.vue'
 
 import {
   getAllPokemon,
-  getAllPokemonTypes,
-  filterPokemonByType
+  getAllPokemonGen,
+  filterPokemonGen
 } from "@/services/pokemon.js";
 
 export default {
@@ -41,32 +49,21 @@ export default {
     return {
       // data pulled from API
       pokemonGenerations: {},
-      // pokemonList: [
-      //   {
-      //     id: "",
-      //     name: "",
-      //     url: ""
-      //   }
-      // ],
-      // pokemonTypes: {
-      //   results: [
-      //     {
-      //       name: ""
-      //     }
-      //   ]
-      // },
+      pokemonByGen: [
+        {
+          gen: '',
+          id: '',
+          name: ''
+        }
+      ],
 
       // manipulated data
       displayedPokemonGenerations: {},
-      // displayedPokemon: {},
-      // selectedType: "all",
-      // displayedPokemon: [
-      //   {
-      //     id: "",
-      //     name: "",
-      //     url: ""
-      //   }
-      // ]
+      displayedPokemon: {},
+
+
+      // default data
+      selected: "All"
     };
   },
 
@@ -122,78 +119,89 @@ export default {
 
 // sets intial data set
 async function created() {
-  // try {
-  //   const response = await getAllPokemon();
-  //   this.pokemonList = response.results.splice(0, 151).map(key => {
-  //     let id = key.url.split("/").slice(-2, -1)[0];
+  this.$on('update', (selection) => {
+    this.selected = selection;
+  })
 
-  //     return { ...key, id };
-  //   });
+  // gets all pokemon and assigns to gen
+  try {
+    const response = await getAllPokemon();
+    this.pokemon = response.results.map(key => {
+      let id = key.url.split("/").slice(-2, -1)[0];
+      let gen = '';
 
-  //   this.displayedPokemon = this.pokemonList;
-  // } catch (e) {
-  //   console.error("Failed to load pokemon");
-  // }
-
-  // try {
-  //   const response = await getAllPokemonTypes();
-  //   this.pokemonTypes = response;
-  // } catch (e) {
-  //   console.error("Failed to load pokemon types");
-  // }
+      if (id >= 1 && id <= 151) {
+        gen = '1'
+      } else if (id >= 152 && id <= 351) {
+        gen = '2'
+      } else if (id >= 252 && id <= 386) {
+        gen = '3'
+      } else if (id >= 387 && id <= 493) {
+        gen = '4'
+      } else if (id >= 494 && id <= 649) {
+        gen = '5'
+      } else if (id >= 650 && id <= 721) {
+        gen = '6'
+      } else if (id >= 722 && id <= 807) {
+        gen = '7'
+      }
+        
+      return { ...key, id, gen };
+    });
+    console.log(this.displayedPokemon)
+  } catch (e) {
+    console.error("Failed to load pokemon");
+  }
 
   // renames pokeGenerations to understandable labels to be displayed in drop down
     try {
       const response = await getAllPokemonGen();
-      console.log(response)
-      // this.pokemonGenerations = response.results.map(key => {
-      //   let id = key.url.split("/").slice(-2, -1)[0];
+      this.pokemonGenerations = response.results.map(key => {
+        let id = key.url.split("/").slice(-2, -1)[0];
 
-      //   return { ...key, id };
-      // });
+        return { ...key, id };
+      });
 
-      // this.displayedPokemonGenerations = this.pokemonGenerations.slice();
+      this.displayedPokemonGenerations = this.pokemonGenerations.slice();
 
-      // this.displayedPokemonGenerations.map(key => {
-      //   switch (key.id) {
-      //     case "1":
-      //       key.name = "Gen 1 (Blue/Red/Yellow)";
-      //       break;
-      //     case "2":
-      //       key.name = "Gen 2 (Gold/Silver/Crystal)";
-      //       break;
-      //     case "3":
-      //       key.name = "Gen 3 (Ruby/Sapphire/Emerald)";
-      //       break;
-      //     case "4":
-      //       key.name = "Gen 4 (Diamond/Pearl/Platinum)";
-      //       break;
-      //     case "5":
-      //       key.name = "Gen 5 (Black/White)";
-      //       break;
-      //     case "6":
-      //       key.name = "Gen 6 (X/Y)";
-      //       break;
-      //     case "7":
-      //       key.name = "Gen 7 (Sun/Moon)";
-      //       break;
-      //     default:
-      //       key.name = "New Gen!";
-      //       break;
-      //   }
-      // });
+      this.displayedPokemonGenerations.map(key => {
+        switch (key.id) {
+          case "1":
+            key.name = "Gen 1 (Blue/Red/Yellow)";
+            break;
+          case "2":
+            key.name = "Gen 2 (Gold/Silver/Crystal)";
+            break;
+          case "3":
+            key.name = "Gen 3 (Ruby/Sapphire/Emerald)";
+            break;
+          case "4":
+            key.name = "Gen 4 (Diamond/Pearl/Platinum)";
+            break;
+          case "5":
+            key.name = "Gen 5 (Black/White)";
+            break;
+          case "6":
+            key.name = "Gen 6 (X/Y)";
+            break;
+          case "7":
+            key.name = "Gen 7 (Sun/Moon)";
+            break;
+          default:
+            key.name = "New Gen!";
+            break;
+        }
+      });
     } catch (e) {
       console.error("Failed to get pokemon generations");
     }
 
-    // creates array of all pokemon types up to latest gen
+    // // creates array of all pokemon types up to latest gen
     // try {
     //   const response = await getAllPokemonTypes();
-    //   console.log(response)
-
-    //   // response.results.map(key => {
-    //   //   this.pokemonTypes.push(key.name);
-    //   // });
+    
+    //   this.pokemonTypes = response.results;
+    //   this.displayedPokemonTypes = this.pokemonTypes
 
     // } catch (e) {
     //   console.error("Failed to load pokemon types");

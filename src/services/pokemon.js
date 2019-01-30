@@ -1,7 +1,7 @@
 const url = "https://pokeapi.co/api/v2";
 
 export async function getAllPokemon() {
-  const response = await fetch(`${url}/pokemon/`);
+  const response = await fetch(`${url}/pokemon/?offset=0&limit=1000`);
   return response.json();
 }
 
