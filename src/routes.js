@@ -6,7 +6,7 @@ export default [
   {
     path: "/pokemon",
     name: "home",
-    component: GenDropdown
+    component: Pokemon
   },
   {
     path: "/pokemon/:name",

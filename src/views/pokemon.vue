@@ -1,5 +1,18 @@
 <template>
-  <div>
+<div>
+    <h1>{{ selected }}</h1>
+    <div>
+      Select a Pokemon Gen: 
+      <poke-dropdown :selected='selected'
+        :options="pokemonGenWithIdAndName"
+        displayValue="name"
+      />
+    </div>
+
+    <poke-card-list 
+      :options="displayedPokemon"
+    />
+    
     <ul class="card-list">
       <li
         class="card"
@@ -10,132 +23,131 @@
         <h3>{{ pokemon.name }}</h3>
         <img
           :src="
-            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-              pokemon.id
-            }.png`
+            pokemon.img
           "
           alt
         />
       </li>
     </ul>
+
   </div>
 </template>
 
 <script>
-import {
-  getAllPokemon,
-  getAllPokemonTypes,
-  filterPokemonByType
-} from "@/services/pokemon.js";
+import pokeDropdown from '@/components/pokeDropdown.vue'
+import pokeCardList from '@/components/pokeCardList.vue'
+
+import { mapMutations, mapActions, mapGetters } from 'vuex';
 
 export default {
-  props: {
-    displayedPokemon: {
-      type: Array,
-      required: true
-    }
+  components: {
+    pokeDropdown,
+    pokeCardList
   },
   // data needs to be a function --> when you instantiate the component, they will have an independent set of data
   data() {
     return {
-      // data pulled from API
-      pokemonList: [
-        {
-          id: "",
-          name: "",
-          url: ""
-        }
-      ],
-      pokemonTypes: {
-        results: [
-          {
-            name: ""
-          }
-        ]
-      },
-      // manipulated data
-      selectedType: "all",
-      displayedPokemon: [
-        {
-          id: "",
-          name: "",
-          url: ""
-        }
-      ]
+      selected: "All"
     };
   },
 
   //Lifecycle
   created,
 
-  methods: {
-    clickedCard(name) {
-      this.$router.push(`/pokemon/${name}`);
+  // getters map to computed
+  computed: {
+    ...mapGetters([
+      'pokemonWithGen',
+      'pokemonGenWithIdAndName'
+    ]),
+    getGenIdBySelectedName() {
+      const gen = this.pokemonGenWithIdAndName.find(gen => {
+        return gen.name === this.selected;
+      });
+      return gen.id;
     },
-
-    async filteredPokemon(type) {
-      try {
-        if (type != "all") {
-          // resets array
-          this.displayedPokemon = [];
-
-          const response = await filterPokemonByType(type);
-          response.pokemon.forEach(key => {
-            if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
-              this.displayedPokemon.push({
-                ...key.pokemon,
-                id: key.pokemon.url.split("/").slice(-2, -1)[0]
-              });
-            }
-          });
-        } else {
-          // resets filter to all types (DIY)
-          this.displayedPokemon = this.pokemonList;
-        }
-
-        this.$router.push({
-          path: "pokemon",
-          query: {
-            type: type
-          }
-        });
-      } catch (e) {
-        console.error("Failed to get pokemon of a specific type", e);
+    displayedPokemon() {
+      if (this.selected === 'All') {
+        return this.pokemonWithGen;
       }
+      return this.pokemonWithGen.filter(pokemon => {
+        return pokemon.gen === this.getGenIdBySelectedName;
+      })
     }
   },
 
-  beforeRouteUpdate(to, from, next) {
-    if (!to.query.type) {
-      this.selectedType = "all";
-      this.displayedPokemon = this.pokemonList;
-    }
+  methods: {
+    ...mapActions([
+      'getAllPokemon',
+      'getAllPokemonGen',
+      'getAllPokemonTypes'
+    ])
+  //   clickedCard(name) {
+  //     this.$router.push(`/pokemon/${name}`);
+  //   },
 
-    next();
+  //   async filteredPokemon(type) {
+  //     try {
+  //       if (type != "all") {
+  //         // resets array
+  //         this.displayedPokemon = [];
+
+  //         const response = await filterPokemonByType(type);
+  //         response.pokemon.forEach(key => {
+  //           if (key.pokemon.url.split("/").slice(-2, -1)[0] < 150) {
+  //             this.displayedPokemon.push({
+  //               ...key.pokemon,
+  //               id: key.pokemon.url.split("/").slice(-2, -1)[0]
+  //             });
+  //           }
+  //         });
+  //       } else {
+  //         // resets filter to all types (DIY)
+  //         this.displayedPokemon = this.pokemonList;
+  //       }
+
+  //       this.$router.push({
+  //         path: "pokemon",
+  //         query: {
+  //           type: type
+  //         }
+  //       });
+  //     } catch (e) {
+  //       console.error("Failed to get pokemon of a specific type", e);
+  //     }
+  //   }
+  // },
+
+  // beforeRouteUpdate(to, from, next) {
+  //   if (!to.query.type) {
+  //     this.selectedType = "all";
+  //     this.displayedPokemon = this.pokemonList;
+  //   }
+
+  //   next();
   }
 };
 
 // sets intial data set
 async function created() {
-  try {
-    const response = await getAllPokemon();
-    this.pokemonList = response.results.splice(0, 151).map(key => {
-      let id = key.url.split("/").slice(-2, -1)[0];
+  await this.getAllPokemon();
+  await this.getAllPokemonGen();
+  await this.getAllPokemonTypes();
+  
+  this.$on('update', (selection) => {
+    this.selected = selection;
+  });
 
-      return { ...key, id };
-    });
+    // creates array of all pokemon types up to latest gen
+    try {
+      const response = await getAllPokemonTypes();
+    
+      this.pokemonTypes = response.results;
+      this.displayedPokemonTypes = this.pokemonTypes
 
-    this.displayedPokemon = this.pokemonList;
-  } catch (e) {
-    console.error("Failed to load pokemon");
-  }
-
-  try {
-    const response = await getAllPokemonTypes();
-    this.pokemonTypes = response;
-  } catch (e) {
-    console.error("Failed to load pokemon types");
-  }
+    } catch (e) {
+      console.error("Failed to load pokemon types");
+    }
 }
 </script>
 

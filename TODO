@@ -1,12 +1,8 @@
-- get pokemon by generation:
-  - create 3 separate components:
-    - gen drop down (parent)
-    - type drop down (child)
-    - displayed cards (child)
 
- -- make all the API calls at the beginning
-  - gen and pokemon and type
-  -  getting individual pokemon info is still it's own separate API calls
+- display types in tabs based on selected generattion
+  - add type array to `pokemonGenWithIdAndName` (getter)
+  - add tabs based on `pokemonGenWithIdAndName`
+- can filter displayed pokemon by type
   
 BUGS:
 - routing
