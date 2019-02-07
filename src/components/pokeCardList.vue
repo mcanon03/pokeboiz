@@ -1,15 +1,21 @@
 <template>
   <div>
-    <h2> Sup </h2>
+    <ul class="card-list">
+      <li
+        v-for='option in options' 
+        :key='option.id'
+      >
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
 
-const pokeCards = {
-  name: 'pokeCards',
+const pokeCardList = {  
+  name: 'pokeCardList',
   props: [
-
+    'options'
   ],
   data() {
     return {
@@ -23,7 +29,7 @@ const pokeCards = {
   }
 }
 
-export default pokeCards;
+export default pokeCardList;
 </script>
 
 <style scope>
